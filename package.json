@@ -1,7 +1,7 @@
 {
   "name": "ccode-vscode-plugin",
-  "displayName": "ccode-vscode-plugin",
-  "description": "",
+  "displayName": "NPX Status Bar",
+  "description": "Display NPX command results in VSCode status bar",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.101.0"
@@ -9,15 +9,46 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "ccode-vscode-plugin.helloWorld",
-        "title": "Hello World"
+        "command": "npxStatusBar.refresh",
+        "title": "Refresh NPX Status"
+      },
+      {
+        "command": "npxStatusBar.showOutput",
+        "title": "Show NPX Output"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "NPX Status Bar",
+      "properties": {
+        "npxStatusBar.command": {
+          "type": "string",
+          "default": "npx ccusage@latest blocks --live",
+          "description": "NPX command to execute and display in status bar"
+        },
+        "npxStatusBar.interval": {
+          "type": "number",
+          "default": 30000,
+          "description": "Execution interval in milliseconds (0 to disable auto-refresh)"
+        },
+        "npxStatusBar.maxLength": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum characters to display in status bar"
+        },
+        "npxStatusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable the NPX status bar display"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
