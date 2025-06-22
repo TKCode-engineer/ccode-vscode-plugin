@@ -11,7 +11,7 @@ export class StatusBarProvider {
             vscode.StatusBarAlignment.Left,
             100
         );
-        this.statusBarItem.command = 'npxStatusBar.showOutput';
+        this.statusBarItem.command = 'npxStatusBar.openTerminal';
         this.statusBarItem.show();
         this.updateDisplay('NPX', 'Ready');
     }

@@ -22,6 +22,10 @@
       {
         "command": "npxStatusBar.showOutput",
         "title": "Show NPX Output"
+      },
+      {
+        "command": "npxStatusBar.openTerminal",
+        "title": "Open CCUsage in Terminal"
       }
     ],
     "configuration": {
@@ -29,12 +33,12 @@
       "properties": {
         "npxStatusBar.command": {
           "type": "string",
-          "default": "npx ccusage@latest blocks --live",
+          "default": "npx ccusage@latest blocks",
           "description": "NPX command to execute and display in status bar"
         },
         "npxStatusBar.interval": {
           "type": "number",
-          "default": 30000,
+          "default": 5000,
           "description": "Execution interval in milliseconds (0 to disable auto-refresh)"
         },
         "npxStatusBar.maxLength": {

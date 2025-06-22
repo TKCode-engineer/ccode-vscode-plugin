@@ -1,4 +1,4 @@
-import { exec, ChildProcess } from 'child_process';
+import { exec, spawn, ChildProcess } from 'child_process';
 import * as vscode from 'vscode';
 
 export interface CommandResult {
@@ -10,8 +10,16 @@ export interface CommandResult {
 export class CommandExecutor {
     private currentProcess: ChildProcess | null = null;
     private isExecuting: boolean = false;
+    private streamingProcess: ChildProcess | null = null;
+    private lastStreamOutput: string = '';
+    private outputCallback: ((output: string) => void) | null = null;
 
     public async executeCommand(command: string): Promise<CommandResult> {
+        // Check if this is a streaming command (contains --live)
+        if (command.includes('--live')) {
+            return this.executeStreamingCommand(command);
+        }
+
         if (this.isExecuting) {
             return {
                 success: false,
@@ -99,6 +107,87 @@ export class CommandExecutor {
         });
     }
 
+    private async executeStreamingCommand(command: string): Promise<CommandResult> {
+        // Return the last captured output from streaming
+        if (this.lastStreamOutput) {
+            return {
+                success: true,
+                output: this.lastStreamOutput,
+                error: undefined
+            };
+        }
+
+        // If no streaming process is running, start it
+        if (!this.streamingProcess) {
+            this.startStreamingProcess(command);
+            return {
+                success: true,
+                output: 'Starting streaming command...',
+                error: undefined
+            };
+        }
+
+        return {
+            success: true,
+            output: this.lastStreamOutput || 'Waiting for output...',
+            error: undefined
+        };
+    }
+
+    public startStreamingProcess(command: string): void {
+        if (this.streamingProcess) {
+            this.streamingProcess.kill();
+        }
+
+        const args = command.split(' ');
+        const cmd = args.shift() || '';
+        
+        this.streamingProcess = spawn(cmd, args, {
+            cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
+            env: { ...process.env }
+        });
+
+        let outputBuffer = '';
+
+        this.streamingProcess.stdout?.on('data', (data) => {
+            const chunk = data.toString();
+            outputBuffer += chunk;
+            
+            // Look for complete lines ending with newline
+            const lines = outputBuffer.split('\n');
+            if (lines.length > 1) {
+                // Take the last complete line (not the last partial line)
+                const completeLine = lines[lines.length - 2];
+                if (completeLine.trim()) {
+                    this.lastStreamOutput = completeLine.trim();
+                    if (this.outputCallback) {
+                        this.outputCallback(this.lastStreamOutput);
+                    }
+                }
+                // Keep only the last partial line in buffer
+                outputBuffer = lines[lines.length - 1];
+            }
+        });
+
+        this.streamingProcess.stderr?.on('data', (data) => {
+            console.error('Streaming command error:', data.toString());
+        });
+
+        this.streamingProcess.on('close', (code) => {
+            console.log(`Streaming process exited with code ${code}`);
+            this.streamingProcess = null;
+        });
+
+        this.streamingProcess.on('error', (error) => {
+            console.error('Streaming process error:', error);
+            this.streamingProcess = null;
+        });
+    }
+
+    public setOutputCallback(callback: (output: string) => void): void {
+        this.outputCallback = callback;
+    }
+
     public isCurrentlyExecuting(): boolean {
         return this.isExecuting;
     }
@@ -113,5 +202,9 @@ export class CommandExecutor {
 
     public dispose(): void {
         this.cancelCurrentExecution();
+        if (this.streamingProcess) {
+            this.streamingProcess.kill();
+            this.streamingProcess = null;
+        }
     }
 }

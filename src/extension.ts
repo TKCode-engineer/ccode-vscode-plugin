@@ -13,6 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// Initialize components
 	statusBarProvider = new StatusBarProvider();
 	commandExecutor = new CommandExecutor();
+	
+	// Set up streaming output callback
+	commandExecutor.setOutputCallback((output: string) => {
+		const formattedOutput = OutputFormatter.formatOutput(output);
+		const tooltip = OutputFormatter.formatTooltip(output);
+		statusBarProvider.updateDisplay(formattedOutput, tooltip);
+	});
 
 	// Register commands
 	const refreshCommand = vscode.commands.registerCommand('npxStatusBar.refresh', async () => {
@@ -21,6 +28,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const showOutputCommand = vscode.commands.registerCommand('npxStatusBar.showOutput', () => {
 		showDetailedOutput();
+	});
+
+	const openTerminalCommand = vscode.commands.registerCommand('npxStatusBar.openTerminal', () => {
+		openCcusageInTerminal();
 	});
 
 	// Listen for configuration changes
@@ -40,6 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		refreshCommand,
 		showOutputCommand,
+		openTerminalCommand,
 		configurationChangeListener,
 		statusBarProvider,
 		commandExecutor
@@ -112,7 +124,7 @@ function showDetailedOutput(): void {
 	const lastOutput = statusBarProvider.getLastOutput();
 	const lastError = statusBarProvider.getLastError();
 	const config = vscode.workspace.getConfiguration('npxStatusBar');
-	const command = config.get<string>('command', 'npx --version');
+	const command = config.get<string>('command', 'npx ccusage@latest blocks');
 
 	let content: string;
 	
@@ -131,6 +143,20 @@ function showDetailedOutput(): void {
 	}).then(doc => {
 		vscode.window.showTextDocument(doc);
 	});
+}
+
+function openCcusageInTerminal(): void {
+	// Create a new terminal
+	const terminal = vscode.window.createTerminal({
+		name: 'CCUsage Monitor',
+		cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+	});
+
+	// Send the ccusage command to the terminal
+	terminal.sendText('npx ccusage@latest blocks --live');
+	
+	// Show the terminal
+	terminal.show();
 }
 
 export function deactivate() {
