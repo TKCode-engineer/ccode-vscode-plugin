@@ -1,0 +1,15 @@
+{
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "editor.semanticHighlighting.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "files.exclude": {
+        "out": false,
+        "dist": false,
+        "**/*.vsix": true
+    },
+    "search.exclude": {
+        "out": true,
+        "dist": true,
+        "**/*.vsix": true
+    }
+}

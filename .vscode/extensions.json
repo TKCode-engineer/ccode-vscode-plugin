@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-vscode.vscode-typescript-next",
+        "ms-vscode.extension-test-runner",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "ms-vscode.hexeditor",
+        "ms-vscode.references-view",
+        "ms-vscode.vscode-webpack-tools",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker"
+    ]
+}
