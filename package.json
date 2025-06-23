@@ -1,7 +1,7 @@
 {
   "name": "ccode-vscode-plugin",
-  "displayName": "NPX Status Bar",
-  "description": "Display NPX command results in VSCode status bar",
+  "displayName": "CCUsage Status Bar",
+  "description": "Display CCUsage metrics in VSCode status bar",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.101.0"
@@ -16,40 +16,40 @@
   "contributes": {
     "commands": [
       {
-        "command": "npxStatusBar.refresh",
-        "title": "Refresh NPX Status"
+        "command": "ccusageStatusBar.refresh",
+        "title": "Refresh CCUsage Status"
       },
       {
-        "command": "npxStatusBar.showOutput",
-        "title": "Show NPX Output"
+        "command": "ccusageStatusBar.showOutput",
+        "title": "Show CCUsage Output"
       },
       {
-        "command": "npxStatusBar.openTerminal",
+        "command": "ccusageStatusBar.openTerminal",
         "title": "Open CCUsage in Terminal"
       }
     ],
     "configuration": {
-      "title": "NPX Status Bar",
+      "title": "CCUsage Status Bar",
       "properties": {
-        "npxStatusBar.command": {
+        "ccusageStatusBar.command": {
           "type": "string",
           "default": "npx ccusage@latest blocks",
-          "description": "NPX command to execute and display in status bar"
+          "description": "CCUsage command to execute and display in status bar"
         },
-        "npxStatusBar.interval": {
+        "ccusageStatusBar.interval": {
           "type": "number",
-          "default": 5000,
+          "default": 30000,
           "description": "Execution interval in milliseconds (0 to disable auto-refresh)"
         },
-        "npxStatusBar.maxLength": {
+        "ccusageStatusBar.maxLength": {
           "type": "number",
           "default": 50,
           "description": "Maximum characters to display in status bar"
         },
-        "npxStatusBar.enabled": {
+        "ccusageStatusBar.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable/disable the NPX status bar display"
+          "description": "Enable/disable the CCUsage status bar display"
         }
       }
     }

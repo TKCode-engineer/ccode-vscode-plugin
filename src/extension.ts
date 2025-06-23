@@ -22,21 +22,21 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// Register commands
-	const refreshCommand = vscode.commands.registerCommand('npxStatusBar.refresh', async () => {
+	const refreshCommand = vscode.commands.registerCommand('ccusageStatusBar.refresh', async () => {
 		await executeNpxCommand();
 	});
 
-	const showOutputCommand = vscode.commands.registerCommand('npxStatusBar.showOutput', () => {
+	const showOutputCommand = vscode.commands.registerCommand('ccusageStatusBar.showOutput', () => {
 		showDetailedOutput();
 	});
 
-	const openTerminalCommand = vscode.commands.registerCommand('npxStatusBar.openTerminal', () => {
+	const openTerminalCommand = vscode.commands.registerCommand('ccusageStatusBar.openTerminal', () => {
 		openCcusageInTerminal();
 	});
 
 	// Listen for configuration changes
 	const configurationChangeListener = vscode.workspace.onDidChangeConfiguration(event => {
-		if (event.affectsConfiguration('npxStatusBar')) {
+		if (event.affectsConfiguration('ccusageStatusBar')) {
 			restartPeriodicExecution();
 		}
 	});
@@ -44,8 +44,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// Start periodic execution
 	startPeriodicExecution();
 
-	// Execute initial command
-	executeNpxCommand();
+	// Execute initial command with delay to ensure proper initialization
+	setTimeout(() => {
+		executeNpxCommand();
+	}, 1000);
 
 	// Register disposables
 	context.subscriptions.push(
@@ -59,9 +61,11 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 async function executeNpxCommand(): Promise<void> {
-	const config = vscode.workspace.getConfiguration('npxStatusBar');
+	const config = vscode.workspace.getConfiguration('ccusageStatusBar');
 	const enabled = config.get<boolean>('enabled', true);
-	const command = config.get<string>('command', 'npx --version');
+	const command = config.get<string>('command', 'npx ccusage@latest blocks');
+
+	console.log(`[NPX Status Bar] Executing command: ${command}, enabled: ${enabled}`);
 
 	if (!enabled) {
 		statusBarProvider.updateDisplay('NPX Disabled', 'NPX Status Bar is disabled in settings');
@@ -77,20 +81,25 @@ async function executeNpxCommand(): Promise<void> {
 	statusBarProvider.setLoading(true);
 
 	try {
+		console.log(`[NPX Status Bar] Starting command execution: ${command}`);
 		const result = await commandExecutor.executeCommand(command);
+		console.log(`[NPX Status Bar] Command result:`, result);
 		
 		if (result.success) {
 			const formattedOutput = OutputFormatter.formatOutput(result.output);
 			const tooltip = OutputFormatter.formatTooltip(result.output, result.error);
 			
+			console.log(`[NPX Status Bar] Formatted output: ${formattedOutput}`);
 			statusBarProvider.setOutput(formattedOutput);
 			statusBarProvider.updateDisplay(formattedOutput, tooltip);
 		} else {
 			const formattedError = OutputFormatter.formatError(result.error || 'Unknown error');
+			console.log(`[NPX Status Bar] Command failed: ${formattedError}`);
 			statusBarProvider.setError(formattedError);
 		}
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+		console.error(`[NPX Status Bar] Exception:`, error);
 		statusBarProvider.setError(OutputFormatter.formatError(errorMessage));
 	} finally {
 		statusBarProvider.setLoading(false);
@@ -98,7 +107,7 @@ async function executeNpxCommand(): Promise<void> {
 }
 
 function startPeriodicExecution(): void {
-	const config = vscode.workspace.getConfiguration('npxStatusBar');
+	const config = vscode.workspace.getConfiguration('ccusageStatusBar');
 	const interval = config.get<number>('interval', 30000);
 
 	if (interval > 0) {
@@ -123,7 +132,7 @@ function restartPeriodicExecution(): void {
 function showDetailedOutput(): void {
 	const lastOutput = statusBarProvider.getLastOutput();
 	const lastError = statusBarProvider.getLastError();
-	const config = vscode.workspace.getConfiguration('npxStatusBar');
+	const config = vscode.workspace.getConfiguration('ccusageStatusBar');
 	const command = config.get<string>('command', 'npx ccusage@latest blocks');
 
 	let content: string;

@@ -1,71 +1,52 @@
-# ccode-vscode-plugin README
+# CCUsage Status Bar Extension
 
-This is the README for your extension "ccode-vscode-plugin". After writing up a brief description, we recommend including the following sections.
+VS Codeのステータスバーに`ccusage`の使用量メトリクスを表示するエクステンションです。
 
-## Features
+## 機能
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- VS Codeステータスバーに`ccusage blocks`のメトリクスを表示
+- アクティブなモデル、トークン使用量、コスト情報を表示
+- 30秒間隔での自動更新（設定可能）
+- ステータスバーのクリックでターミナルに`ccusage`を開く
 
-For example if there is an image subfolder under your extension project workspace:
+## 必要な環境
 
-\!\[feature X\]\(images/feature-x.png\)
+- Node.jsとNPXがインストール済み
+- `ccusage`パッケージがグローバルで利用可能
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## エクステンション設定
 
-## Requirements
+この拡張機能では以下の設定項目を提供しています：
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- `ccusageStatusBar.command`: 実行するCCUsageコマンド（デフォルト: "npx ccusage@latest blocks"）
+- `ccusageStatusBar.interval`: 実行間隔（ミリ秒）（デフォルト: 30000）
+- `ccusageStatusBar.maxLength`: ステータスバーに表示する最大文字数（デフォルト: 50）
+- `ccusageStatusBar.enabled`: エクステンションの有効/無効化（デフォルト: true）
 
-## Extension Settings
+## インストール方法
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+### 手動インストール
+1. このリポジトリをクローンまたはダウンロード
+2. VS Codeでコマンドパレット（`Ctrl+Shift+P` / `Cmd+Shift+P`）を開く
+3. `Extensions: Install from VSIX...` を選択
+4. パッケージ化したVSIXファイルを選択してインストール
 
-For example:
+### 使用方法
+1. エクステンションをインストール
+2. ステータスバーに自動的にccusageメトリクスが表示されます
+3. ステータスバーアイテムをクリックすると新しいターミナルでccusageが開きます
 
-This extension contributes the following settings:
+## ステータスバー表示形式
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+`🤖sonnet-4 🎯13.44K Tkns 💰$2.31 📈$5.06`
 
-## Known Issues
+- 🤖: アクティブなモデル名
+- 🎯: トークン使用量（千単位）
+- 💰: 現在のアクティブコスト
+- 📈: 予測コスト
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## リリースノート
 
-## Release Notes
+### 0.0.1
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+CCUsage Status Bar extensionの初回リリース。
