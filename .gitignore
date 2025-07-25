@@ -107,7 +107,6 @@ dist
 
 # VS Code extension specific
 out/
-*.vsix
 vsc-extension-quickstart.md
 
 # VS Code workspace settings (uncomment if personal settings get mixed in)
