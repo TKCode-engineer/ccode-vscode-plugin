@@ -11,13 +11,13 @@ export class StatusBarProvider {
             vscode.StatusBarAlignment.Left,
             100
         );
-        this.statusBarItem.command = 'npxStatusBar.openTerminal';
+        this.statusBarItem.command = 'ccusageStatusBar.openTerminal';
         this.statusBarItem.show();
         this.updateDisplay('NPX', 'Ready');
     }
 
     public updateDisplay(text: string, tooltip?: string): void {
-        const config = vscode.workspace.getConfiguration('npxStatusBar');
+        const config = vscode.workspace.getConfiguration('ccusageStatusBar');
         const maxLength = config.get<number>('maxLength', 50);
         
         let displayText = text;
