@@ -1,11 +1,8 @@
-import { exec, spawn, ChildProcess } from 'child_process';
+import { spawn, ChildProcess, SpawnOptions } from 'child_process';
 import * as vscode from 'vscode';
-
-export interface CommandResult {
-    success: boolean;
-    output: string;
-    error?: string;
-}
+import { CommandResult, Logger, ParsedCommand } from './interfaces';
+import { SecureCommandValidator } from './commandValidator';
+import { COMMAND_TIMEOUT_MS, ERROR_MESSAGES, MAX_OUTPUT_BUFFER_SIZE } from './constants';
 
 export class CommandExecutor {
     private currentProcess: ChildProcess | null = null;
@@ -13,18 +10,38 @@ export class CommandExecutor {
     private streamingProcess: ChildProcess | null = null;
     private lastStreamOutput: string = '';
     private outputCallback: ((output: string) => void) | null = null;
+    private logger: Logger;
+    private validator: SecureCommandValidator;
+
+    constructor(logger: Logger) {
+        this.logger = logger;
+        this.validator = new SecureCommandValidator();
+    }
 
     public async executeCommand(command: string): Promise<CommandResult> {
-        // Check if this is a streaming command (contains --live)
-        if (command.includes('--live')) {
-            return this.executeStreamingCommand(command);
-        }
-
-        if (this.isExecuting) {
+        // Validate command first
+        const validationResult = this.validator.validateCommand(command);
+        if (!validationResult.isValid) {
             return {
                 success: false,
                 output: '',
-                error: 'Another command is already executing'
+                error: validationResult.error || ERROR_MESSAGES.INVALID_COMMAND
+            };
+        }
+
+        const sanitizedCommand = validationResult.sanitizedCommand!;
+        
+        // Check if this is a streaming command (contains --live)
+        if (sanitizedCommand.includes('--live')) {
+            return this.executeStreamingCommand(sanitizedCommand);
+        }
+
+        // Prevent concurrent executions (including streaming processes)
+        if (this.isExecuting || this.streamingProcess) {
+            return {
+                success: false,
+                output: '',
+                error: ERROR_MESSAGES.ANOTHER_EXECUTING
             };
         }
 
@@ -36,75 +53,154 @@ export class CommandExecutor {
                 this.currentProcess.kill();
             }
 
-            const timeout = 30000; // 30 seconds timeout
-
-            this.currentProcess = exec(command, {
-                timeout: timeout,
-                cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
-                env: { ...process.env }
-            }, (error, stdout, stderr) => {
+            const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            
+            // Parse command safely
+            const parsedCommand = this.parseCommandSafely(sanitizedCommand);
+            if (!parsedCommand) {
                 this.isExecuting = false;
-                this.currentProcess = null;
+                resolve({
+                    success: false,
+                    output: '',
+                    error: ERROR_MESSAGES.INVALID_COMMAND
+                });
+                return;
+            }
 
-                if (error) {
-                    // Check if it's a timeout error
-                    if (error.message.includes('timeout')) {
-                        resolve({
-                            success: false,
-                            output: '',
-                            error: 'Command execution timed out (30s)'
-                        });
-                        return;
-                    }
+            this.logger.appendLine(`[INFO] Executing: ${parsedCommand.executable} ${parsedCommand.args.join(' ')}`);
 
-                    // Check if it's a command not found error
-                    if (error.message.includes('command not found') || 
-                        error.message.includes('not recognized') ||
-                        stderr.includes('command not found')) {
-                        resolve({
-                            success: false,
-                            output: '',
-                            error: 'NPX command not found. Please ensure Node.js and NPX are installed.'
-                        });
-                        return;
-                    }
+            const spawnOptions: SpawnOptions = {
+                cwd: workspaceFolder || process.cwd(),
+                env: { ...process.env },
+                stdio: ['ignore', 'pipe', 'pipe']
+            };
 
-                    resolve({
-                        success: false,
-                        output: stdout.trim(),
-                        error: stderr.trim() || error.message
-                    });
-                    return;
-                }
+            this.currentProcess = spawn(parsedCommand.executable, parsedCommand.args, spawnOptions);
+            
+            let stdout = '';
+            let stderr = '';
+            let timeoutId: NodeJS.Timeout | undefined;
 
-                const output = stdout.trim();
-                if (!output && stderr.trim()) {
+            // Set up timeout
+            timeoutId = setTimeout(() => {
+                if (this.currentProcess) {
+                    this.currentProcess.kill('SIGTERM');
+                    this.isExecuting = false;
+                    this.currentProcess = null;
                     resolve({
                         success: false,
                         output: '',
-                        error: stderr.trim()
+                        error: ERROR_MESSAGES.COMMAND_TIMEOUT
                     });
-                    return;
                 }
+            }, COMMAND_TIMEOUT_MS);
 
-                resolve({
-                    success: true,
-                    output: output,
-                    error: stderr.trim() || undefined
-                });
+            // Handle stdout
+            this.currentProcess.stdout?.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            // Handle stderr
+            this.currentProcess.stderr?.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            // Handle process completion
+            this.currentProcess.on('close', (code) => {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                
+                this.isExecuting = false;
+                this.currentProcess = null;
+
+                if (code === 0) {
+                    this.logger.appendLine(`[SUCCESS] Command completed successfully`);
+                    resolve({
+                        success: true,
+                        output: stdout.trim(),
+                        error: stderr.trim() || undefined
+                    });
+                } else {
+                    this.logger.appendLine(`[ERROR] Command failed with code: ${code}`);
+                    
+                    let errorMessage = stderr.trim();
+                    
+                    // Categorize common errors
+                    if (code === 127 || stderr.includes('command not found')) {
+                        errorMessage = ERROR_MESSAGES.COMMAND_NOT_FOUND;
+                    } else if (stderr.includes('permission denied') || stderr.includes('EACCES')) {
+                        errorMessage = ERROR_MESSAGES.PERMISSION_DENIED;
+                    } else if (stderr.includes('network') || stderr.includes('ENOTFOUND')) {
+                        errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
+                    } else if (!errorMessage) {
+                        errorMessage = `Command failed with exit code ${code}`;
+                    }
+                    
+                    resolve({
+                        success: false,
+                        output: stdout.trim(),
+                        error: errorMessage
+                    });
+                }
             });
 
             // Handle process errors
             this.currentProcess.on('error', (error) => {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                
                 this.isExecuting = false;
                 this.currentProcess = null;
+                
+                let errorMessage = error.message;
+                if ((error as any).code === 'ENOENT') {
+                    errorMessage = ERROR_MESSAGES.COMMAND_NOT_FOUND;
+                }
+                
+                this.logger.appendLine(`[ERROR] Process error: ${errorMessage}`);
                 resolve({
                     success: false,
                     output: '',
-                    error: error.message
+                    error: errorMessage
                 });
             });
+
         });
+    }
+
+    private parseCommandSafely(command: string): ParsedCommand | null {
+        try {
+            const parts = command.split(/\s+/).filter(part => part.length > 0);
+            
+            let startIndex = 0;
+            let executable = '';
+            let isWSL = false;
+            
+            // Check for WSL prefix
+            if (parts[0] === 'wsl') {
+                isWSL = true;
+                executable = 'wsl';
+                startIndex = 1;
+            }
+            
+            if (parts[startIndex] === 'npx') {
+                if (!isWSL) {
+                    executable = 'npx';
+                }
+                const args = isWSL ? ['npx', ...parts.slice(startIndex + 1)] : parts.slice(startIndex + 1);
+                return {
+                    executable,
+                    args,
+                    isWSL
+                };
+            }
+            
+            return null;
+        } catch (error) {
+            return null;
+        }
     }
 
     private async executeStreamingCommand(command: string): Promise<CommandResult> {
@@ -139,12 +235,16 @@ export class CommandExecutor {
             this.streamingProcess.kill();
         }
 
-        const args = command.split(' ');
-        const cmd = args.shift() || '';
+        const parsedCommand = this.parseCommandSafely(command);
+        if (!parsedCommand) {
+            this.logger.appendLine('[CommandExecutor] Invalid streaming command');
+            return;
+        }
         
-        this.streamingProcess = spawn(cmd, args, {
+        this.streamingProcess = spawn(parsedCommand.executable, parsedCommand.args, {
             cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
-            env: { ...process.env }
+            env: { ...process.env },
+            stdio: ['ignore', 'pipe', 'pipe']
         });
 
         let outputBuffer = '';
@@ -152,6 +252,13 @@ export class CommandExecutor {
         this.streamingProcess.stdout?.on('data', (data) => {
             const chunk = data.toString();
             outputBuffer += chunk;
+            
+            // Limit buffer size to prevent memory leaks
+            if (outputBuffer.length > MAX_OUTPUT_BUFFER_SIZE) {
+                const lines = outputBuffer.split('\n');
+                // Keep only the last few lines
+                outputBuffer = lines.slice(-10).join('\n');
+            }
             
             // Look for complete lines ending with newline
             const lines = outputBuffer.split('\n');
@@ -170,16 +277,16 @@ export class CommandExecutor {
         });
 
         this.streamingProcess.stderr?.on('data', (data) => {
-            console.error('Streaming command error:', data.toString());
+            this.logger.appendLine(`[ERROR] Streaming stderr: ${data.toString().trim()}`);
         });
 
         this.streamingProcess.on('close', (code) => {
-            console.log(`Streaming process exited with code ${code}`);
+            this.logger.appendLine(`[INFO] Streaming process exited with code ${code}`);
             this.streamingProcess = null;
         });
 
         this.streamingProcess.on('error', (error) => {
-            console.error('Streaming process error:', error);
+            this.logger.appendLine(`[ERROR] Streaming process error: ${error.message}`);
             this.streamingProcess = null;
         });
     }

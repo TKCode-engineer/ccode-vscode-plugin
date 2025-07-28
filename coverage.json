@@ -1,0 +1,13 @@
+{
+  "branches": 80,
+  "functions": 85,
+  "lines": 90,
+  "statements": 90,
+  "exclude": [
+    "src/test/**/*",
+    "out/**/*",
+    "node_modules/**/*"
+  ],
+  "reporter": ["text", "lcov", "html"],
+  "all": true
+}

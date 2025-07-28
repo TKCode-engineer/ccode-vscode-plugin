@@ -2,8 +2,8 @@
   "name": "ccode-vscode-plugin",
   "publisher": "local",
   "displayName": "CCUsage Status Bar",
-  "description": "Display CCUsage metrics in VSCode status bar",
-  "version": "0.0.1",
+  "description": "Secure, optimized VSCode extension for displaying CCUsage metrics in status bar with comprehensive security and performance improvements",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -61,7 +61,12 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "lint:fix": "eslint src --fix",
+    "test": "vscode-test",
+    "test:unit": "npm run compile && node out/test/unit/runTests.js",
+    "test:integration": "npm run compile && node out/test/integration/runTests.js",
+    "test:coverage": "npm run compile && npm run test:unit && npm run test:integration",
+    "test:watch": "npm run compile && npm run test:unit -- --watch"
   },
   "devDependencies": {
     "@types/vscode": "^1.99.0",

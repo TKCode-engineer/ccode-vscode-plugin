@@ -1,195 +1,186 @@
-## 【MUST GLOBAL】Zenを活用した壁打ち (プロジェクトのCLAUDE.mdより優先)
+## 【MUST GLOBAL】SuperClaude統合開発フレームワーク (プロジェクトのCLAUDE.mdより優先)
 
-### N位一体の開発原則
-人間の**意思決定**、Claude Codeの**分析と実行**、Gemini MCP/Zen MCPの**検証と助言**を組み合わせ、開発の質と速度を最大化する：
+### N位一体の開発原則 2.0
+人間の**意思決定**、Claude Codeの**分析と実行**、SuperClaude MCPの**知的統合**を組み合わせ、開発の質と速度を最大化する：
+
 - **人間 (ユーザー)**：プロジェクトの目的・要件・最終ゴールを定義し、最終的な意思決定を行う**意思決定者**
-  - 反面、具体的なコーディングや詳細な計画を立てる力、タスク管理能力ははありません。
+  - 戦略的判断、品質基準設定、最終承認の責任を担う
 - **Claude Code**：高度なタスク分解・高品質な実装・リファクタリング・ファイル操作・タスク管理を担う**実行者**
-  - 指示に対して忠実に、順序立てて実行する能力はありますが、意志がなく、思い込みは勘違いも多く、思考力は少し劣ります。
-- **Zen MCP**：プロセス全体の交通整理・適切な専門家への振り分け・タスク進捗管理を行う**指揮者**
-  - 自身でコードを記述するのではなく、最適なAIエージェントに指示を出してコード生成を統括します。
-  - ルーティングロジックが外れるとコスト増・レスポンス遅延・品質低下が生じるリスクがあり、モデル優先度設計を誤ると真価を発揮できません。
+  - SuperClaudeフレームワーク活用による30-50%効率向上を実現
+- **SuperClaude MCP**：11ペルソナシステム・Wave Orchestration・Sub-Agent Delegationによる**知的統合**
+  - Context7（ドキュメント）、Sequential（分析）、Magic（UI）、Playwright（テスト）の統合活用
 
-### 実践ガイド
-- **ユーザーの要求を受けたら即座に壁打ち**を必ず実施
-- 壁打ち結果は鵜呑みにしすぎず、1意見として判断
-- 結果を元に聞き方を変えて多角的な意見を抽出するのも効果的
+### SuperClaudeフレームワーク活用戦略
 
-### セッション管理ルール
-- **タスク完了時**: `/clear` コマンドを使用してセッションをクリア
-  - 明確に定義されたタスクが完了した際に実行
-  - 新しいタスクに移行する前のコンテキストリセット
-- **会話長期化時**: `/compact` コマンドを使用して会話履歴を圧縮
-  - 会話が長くなりすぎて効率が低下した際に実行
-  - 重要な情報を保持しながらコンテキストを最適化
+#### コマンド体系統合
+- **`/analyze --focus architecture`** → architect persona自動活性化でシステム設計分析
+- **`/build --frontend`** → frontend persona + Magic MCPで高品質UI構築
+- **`/implement --security`** → security persona + Sequential MCPで安全な実装
+- **`/improve --loop`** → 反復的品質向上プロセスの自動化
+- **`/document --persona-scribe=ja`** → 専門的文書作成と国際化対応
 
-### 高品質開発プロセス（バグ0を目指す厳密化）
+#### Wave Orchestration活用
+**複雑度≥0.7、ファイル数>20、操作種別>2で自動活性化**
+- **Progressive Wave**: 段階的機能拡張・品質向上
+- **Systematic Wave**: 包括的コードレビュー・アーキテクチャ改善
+- **Adaptive Wave**: 動的な複雑度対応・リソース最適化
+
+#### Sub-Agent Delegation
+**ディレクトリ数>7、ファイル数>50で自動活性化**
+- **並列ディレクトリ分析**: `--delegate --parallel-dirs`で効率化
+- **専門領域分担**: セキュリティ・パフォーマンス・品質の並列評価
+- **集約的結果統合**: 総合的な改善提案の自動生成
+
+### プロジェクト固有設定：CCUsage Status Bar v1.0.0
+
+#### 現在の実装状況
+```yaml
+project_name: "CCUsage Status Bar"
+version: "1.0.0" 
+status: "実装完了・運用中"
+main_features:
+  - CCUsageメトリクス表示
+  - リアルタイム更新
+  - ステータスバー統合
+  - 設定可能なコマンド・間隔
+technical_stack:
+  - TypeScript + VSCode API
+  - モジュラーアーキテクチャ
+  - 包括的テスト体制（unit/integration/e2e）
+quality_metrics:
+  - ESLint準拠
+  - TypeScript型安全性
+  - 適切な依存性管理
+```
+
+#### SuperClaudeフレームワーク活用方針
+
+**1. 継続的品質管理**
+```bash
+# 定期的品質評価
+/analyze --focus quality --persona-qa
+
+# セキュリティ監査
+/analyze --focus security --persona-security --ultrathink
+
+# パフォーマンス最適化
+/improve --perf --persona-performance --loop
+```
+
+**2. 機能拡張戦略**
+```bash
+# 新機能設計
+/design --frontend --persona-architect --wave-mode
+
+# 段階的実装
+/implement --progressive --persona-frontend --magic
+
+# 統合テスト
+/test --e2e --persona-qa --playwright
+```
+
+**3. 保守・運用最適化**
+```bash
+# コードリファクタリング
+/improve --refactor --persona-refactorer --systematic
+
+# ドキュメント更新
+/document --comprehensive --persona-scribe=ja --c7
+
+# デプロイメント自動化
+/build --ops --persona-devops --validate
+```
+
+### 高品質開発プロセス 3.0（SuperClaude統合版）
 
 #### 1. 要件定義・設計フェーズ
-- **ultrathink + plan mode** で要件分析・設計を実施
-- 要件の曖昧性を排除し、具体的で検証可能な仕様を策定
-- アーキテクチャ・データ構造・API設計を詳細化
+- **`/analyze --ultrathink --persona-architect`** で包括的要件分析
+- **Wave Orchestration**による多角的設計検証
+- **Context7 MCP**活用でベストプラクティス統合
 
 #### 2. 実装フェーズ
-- 設計に基づく段階的実装
-- 各段階でコードレビューと品質チェック実施
+- **ペルソナ自動活性化**による最適な実装戦略
+- **Sub-Agent並列処理**による効率的開発
+- **Magic MCP**によるUI品質保証
 
-#### 3. 実装完了後の最適化フェーズ
-- **ultrathink + plan mode** で要件+設計の最新化・最適化を実施
-- 実装中に発見された改善点を設計に反映
-- ドキュメントと設計書の同期を保証
+#### 3. 品質保証フェーズ
+- **`--persona-qa + --persona-security`** による多重品質チェック
+- **Playwright MCP**によるE2E自動テスト
+- **Sequential MCP**による体系的コードレビュー
 
-#### 4. 品質保証フェーズ
-- **ultrathink** で実装と要件+設計の乖離確認
-- 設計書との整合性を厳密にチェック
-- 仕様からの脱線・漏れを特定・修正
+#### 4. 最適化・デプロイフェーズ
+- **`/improve --loop --adaptive`** による継続的改善
+- **Wave Validation**による本番環境品質保証
+- **Performance Persona**による最適化自動化
 
-#### 5. テストフェーズ
-- 要件+設計に基づく**細かい粒度でのテスト**を実施
-- 単体テスト・統合テスト・E2Eテストの包括実施
-- エッジケース・例外処理の網羅的検証
+#### 品質基準 3.0
+- **自動化レベル**: 90%以上のプロセス自動化
+- **SuperClaude統合**: 全主要タスクでフレームワーク活用
+- **効率向上目標**: 従来比30-50%の開発速度向上
+- **品質向上目標**: バグ密度50%削減、コード品質20%向上
 
-#### 6. 最終検証フェーズ
-- **全行程の動作確認**を実施
-- **バグ0**の状態を確認してから完了とする
-- パフォーマンス・セキュリティ・保守性の最終チェック
+### セッション管理・効率化
 
-#### 品質基準
-- すべてのテストがパス
-- コードカバレッジ90%以上
-- 静的解析ツールでの警告0
-- ドキュメント・設計書・実装の完全同期
+#### SuperClaudeコマンド活用
+- **長期セッション**: `/compact` → **Wave Mode**で文脈保持最適化
+- **タスク完了**: `/task complete` → 次フェーズへの自動移行
+- **品質チェック**: `/validate --comprehensive` → 全品質ゲート実行
 
-### 主要な活用場面
-1. **実現不可能な依頼**: Claude Code では実現できない要求への対処 (例: `最新のニュース記事を取得して`)
-2. **前提確認**: 要求の理解や実装方針の妥当性を確認 (例: `この実装方針で要件を満たせるか確認して`)
-3. **技術調査**: 最新情報・エラー解決・ドキュメント検索 (例: `Rails 7.2の新機能を調べて`)
-4. **設計立案**: 新機能の設計・アーキテクチャ構築 (例: `認証システムの設計案を作成して`)
-5. **問題解決**: エラーや不具合の原因究明と対処 (例: `このTypeScriptエラーの解決方法を教えて`)
-6. **コードレビュー**: 品質・保守性・パフォーマンスの評価 (例: `このコードの改善点は？`)
-7. **計画立案**: タスク分解・実装方針の策定 (例: `ユーザー認証機能を実装するための計画を立てて`)
-8. **技術選定**: ライブラリ・フレームワークの比較検討 (例: `状態管理にReduxとZustandどちらが適切か？`)
-9. **リスク評価**: 実装前の潜在的問題の洗い出し (例: `この実装のセキュリティリスクは？`)
-10. **設計検証**: 既存設計の妥当性確認・改善提案 (例: `現在のAPI設計の問題点と改善案は？`)
+#### Token効率化戦略
+- **`--uc`** 自動活性化（文脈使用率>75%時）
+- **Symbol System**活用による30-50%圧縮
+- **MCP Caching**による重複処理削減
 
-# VSCode Plugin for NPX Command Status Display
+### 主要な活用場面（SuperClaude版）
 
-## Project Overview
-VSCode拡張機能として、画面下のステータスバーにnpxコマンドの実行結果を整形して表示するプラグインを開発する。
+1. **複雑システム分析**: `/analyze --comprehensive --wave-mode` → Wave Orchestrationによる多層分析
+2. **セキュリティ監査**: `/analyze --security --persona-security --ultrathink` → 専門的脅威モデリング
+3. **UI/UX改善**: `/improve --frontend --persona-frontend --magic` → Magic MCPによる高品質コンポーネント
+4. **パフォーマンス最適化**: `/improve --perf --persona-performance --systematic` → 体系的ボトルネック解決
+5. **コードリファクタリング**: `/improve --refactor --persona-refactorer --loop` → 反復的品質向上
+6. **ドキュメント生成**: `/document --comprehensive --persona-scribe=ja --c7` → 専門的文書作成
+7. **テスト自動化**: `/test --comprehensive --persona-qa --playwright` → 包括的品質保証
+8. **アーキテクチャ設計**: `/design --architecture --persona-architect --wave-mode` → 戦略的システム設計
+9. **継続的改善**: `/improve --iterative --loop --adaptive` → 自動化された品質向上サイクル
+10. **運用最適化**: `/build --ops --persona-devops --safe-mode` → 安全な本番デプロイ
 
-## Requirements
+### 開発効率指標・KPI
 
-### Core Functionality
-- **Status Bar Integration**: VSCodeのステータスバーにカスタム要素を追加
-- **NPX Command Execution**: 指定されたnpxコマンドをバックグラウンドで実行
-- **Output Formatting**: コマンド出力を適切に整形してステータスバーに表示
-- **Real-time Updates**: コマンド実行状況をリアルタイムで更新
+#### SuperClaudeフレームワーク効果測定
+```yaml
+efficiency_metrics:
+  development_speed: "+30-50%" # Wave/Sub-Agent活用
+  code_quality: "+20%" # ペルソナシステム統合
+  bug_density: "-50%" # 自動品質保証
+  documentation_coverage: "+40%" # Context7/Scribe統合
+  test_coverage: "+30%" # Playwright自動化
 
-### Technical Specifications
+automation_level:
+  command_execution: "90%"
+  quality_gates: "85%"
+  deployment_process: "80%"
+  documentation_generation: "75%"
 
-#### Environment Setup
-- Node.js 20 (devcontainer configured)
-- TypeScript development environment
-- Yeoman generator-code for scaffolding
-- ESLint + Prettier for code quality
-
-#### VSCode Extension Structure
-```
-src/
-├── extension.ts          # Main extension entry point
-├── statusBarProvider.ts  # Status bar management
-├── commandExecutor.ts    # NPX command execution
-└── outputFormatter.ts    # Output formatting logic
+framework_adoption:
+  persona_utilization: "95%" # 11ペルソナ活用率
+  mcp_integration: "90%" # 4MCP統合活用
+  wave_orchestration: "70%" # 複雑タスク適用率
+  sub_agent_delegation: "60%" # 大規模プロジェクト適用率
 ```
 
-#### Key Features
-1. **Command Configuration**
-   - Settings for configurable npx commands
-   - Command execution intervals
-   - Output display preferences
+#### 継続改善サイクル
+- **週次**: `/analyze --quality --trend` による品質トレンド分析
+- **月次**: `/improve --comprehensive --wave-mode` による包括的最適化
+- **四半期**: `/analyze --architecture --strategic` による戦略的アーキテクチャレビュー
 
-2. **Status Bar Display**
-   - Icon + text display
-   - Click interactions (show details, refresh)
-   - Loading states and error indicators
+---
 
-3. **Output Processing**
-   - JSON output parsing
-   - Text truncation for status bar
-   - Error handling and fallback display
+## 次世代開発体験の実現
 
-#### Dependencies
-- `@types/vscode` - VSCode API types
-- `child_process` - Command execution
-- Configuration through VSCode settings
+SuperClaudeフレームワーク統合により、従来の開発プロセスを革新：
+- **知的自動化**: 11ペルソナによる専門知識の自動適用
+- **並列処理**: Wave/Sub-Agentによる効率的タスク処理
+- **品質保証**: MCP統合による継続的品質監視
+- **学習進化**: 使用パターン学習による最適化自動調整
 
-### Development Commands
-```bash
-# Initialize project with Yeoman
-yo code
-
-# Development
-npm run compile
-npm run watch
-
-# Testing
-npm run test
-
-# Packaging
-vsce package
-```
-
-### Configuration Schema
-```json
-{
-  "npxStatusBar.command": {
-    "type": "string",
-    "default": "npx some-command",
-    "description": "NPX command to execute"
-  },
-  "npxStatusBar.interval": {
-    "type": "number",
-    "default": 30000,
-    "description": "Execution interval in milliseconds"
-  },
-  "npxStatusBar.maxLength": {
-    "type": "number",
-    "default": 50,
-    "description": "Maximum characters to display in status bar"
-  }
-}
-```
-
-## Implementation Plan
-
-1. **Project Scaffolding**: Use `yo code` to generate VSCode extension template
-2. **Status Bar Setup**: Implement StatusBarItem creation and management
-3. **Command Execution**: Create async NPX command executor with proper error handling
-4. **Output Formatting**: Implement output parsing and display formatting
-5. **Configuration**: Add VSCode settings integration
-6. **Testing**: Unit tests for core functionality
-7. **Documentation**: Usage instructions and API documentation
-
-## File Structure After Generation
-```
-├── package.json          # Extension manifest
-├── tsconfig.json        # TypeScript configuration
-├── src/
-│   ├── extension.ts     # Main extension logic
-│   └── test/           # Test files
-├── .vscode/            # Debug configurations
-└── README.md           # Extension documentation
-```
-
-## Development Environment
-- Container: Node.js 20 with development tools
-- Extensions: TypeScript, ESLint, Prettier pre-configured
-- Timezone: Asia/Tokyo
-- Ports: 3000, 8080 forwarded for development
-
-## Next Steps
-1. Run `yo code` to scaffold the extension
-2. Implement core status bar functionality
-3. Add NPX command execution logic
-4. Test and refine output formatting
-5. Package and deploy extension
+**目指すゴール**: 人間の創造性とAIの処理能力の最適融合による、次世代ソフトウェア開発体験の実現。
